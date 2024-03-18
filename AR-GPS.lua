@@ -1,7 +1,7 @@
 -- AR-GPS
 -- by Murten with additions by McThickness and Hexarobi
 
-local SCRIPT_VERSION = "0.3.1"
+local SCRIPT_VERSION = "0.3.2"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -71,7 +71,9 @@ local WAYPOINT_GPS_SLOT = 0
 local OBJECTIVE_GPS_SLOT = 1
 
 local user_ped = players.user_ped()
-local state = {}
+local state = {
+    active_routes={}
+}
 local menus = {}
 
 v3.one = v3(1, 1, 1)
@@ -79,6 +81,16 @@ v3.one = v3(1, 1, 1)
 ---
 --- Functions
 ---
+
+local function get_num_active_routes()
+    local count = 0
+    for route_slot, is_active in state.active_routes do
+        if is_active then
+            count = count + 1
+        end
+    end
+    return count
+end
 
 local function quadraticBezierCurve(p0, p1, p2, t)
     local a = (1 - t) ^ 2
@@ -168,7 +180,8 @@ local function get_route_clean(max_nodes, route_slot)
 end
 
 local function draw_gps_route_slot(route_slot)
-    local points = get_route_clean(config.max_nodes, route_slot)
+    local points = get_route_clean(config.max_nodes / get_num_active_routes(), route_slot)
+    state.active_routes[route_slot] = (#points > 0)
     draw_points(points, route_slot)
 end
 
