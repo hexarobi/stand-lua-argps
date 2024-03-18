@@ -1,7 +1,7 @@
 -- AR-GPS
 -- by Murten with additions by McThickness and Hexarobi
 
-local SCRIPT_VERSION = "0.3.1r"
+local SCRIPT_VERSION = "0.3.2r"
 
 ---
 --- Dependencies
