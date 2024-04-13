@@ -1,7 +1,7 @@
 -- AR-GPS
 -- by Murten with additions by McThickness and Hexarobi
 
-local SCRIPT_VERSION = "0.3.3"
+local SCRIPT_VERSION = "0.3.4"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -38,7 +38,9 @@ local auto_update_config = {
     source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-argps/main/AR-GPS.lua",
     script_relpath=SCRIPT_RELPATH,
 }
-auto_updater.run_auto_update(auto_update_config)
+if auto_updater == true then
+    auto_updater.run_auto_update(auto_update_config)
+end
 
 ---
 --- Dependencies
