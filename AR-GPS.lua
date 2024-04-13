@@ -1,7 +1,7 @@
 -- AR-GPS
 -- by Murten with additions by McThickness and Hexarobi
 
-local SCRIPT_VERSION = "0.3.2"
+local SCRIPT_VERSION = "0.3.3"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -58,7 +58,7 @@ local config = {
     line_z_offset = -1,
     lowering_strength = 6,
     max_nodes = 12,
-    tick_handler_delay = 10,
+    tick_handler_delay = 100,
     draw_waypoint_gps = true,
     draw_objective_gps = true,
     slot_colors = {
@@ -179,10 +179,24 @@ local function get_route_clean(max_nodes, route_slot)
     return result
 end
 
-local function draw_gps_route_slot(route_slot)
+local function recalculate_route(route_slot)
     local points = get_route_clean(config.max_nodes / get_num_active_routes(), route_slot)
-    state.active_routes[route_slot] = (#points > 0)
-    draw_points(points, route_slot)
+    state.active_routes[route_slot] = points -- (#points > 0)
+end
+
+local function draw_gps_route_slot(route_slot)
+    if #state.active_routes[route_slot] > 0 then
+        draw_points(state.active_routes[route_slot], route_slot)
+    end
+end
+
+local function recalculate_gps()
+    if config.draw_waypoint_gps then
+        recalculate_route(WAYPOINT_GPS_SLOT)
+    end
+    if config.draw_objective_gps then
+        recalculate_route(OBJECTIVE_GPS_SLOT)
+    end
 end
 
 local function redraw_gps()
@@ -198,8 +212,9 @@ end
 local function update_gps_tick()
     if state.next_tick_time == nil or util.current_time_millis() > state.next_tick_time then
         state.next_tick_time = util.current_time_millis() + config.tick_handler_delay
-        redraw_gps()
+        recalculate_gps()
     end
+    redraw_gps()
 end
 
 ---
